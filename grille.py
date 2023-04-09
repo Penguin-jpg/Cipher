@@ -1,7 +1,9 @@
+import string
+
+
 class Grille:
     def __init__(self, key, num_groups=9, num_members=4):
         # initialize the selection groups of grille matrix position (base on 6 x 6 grille matrix)
-        self.key = ""
         self.num_groups = num_groups
         self.num_members = num_members
         self.position_matrix = [[0] * num_members for _ in range(self.num_groups)]
@@ -16,22 +18,24 @@ class Grille:
             [14, 10, 23, 27],
             [15, 16, 22, 21],
         ]
-        self.key_transform_table = ["0"] * 62
-        self.key_transform_table = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0",
-                                    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
-                                    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
-        for i in range(len(key)):
+        self.key = self._key_transform(key)
+
+    def _key_transform(self, key):
+        """Make key valid for Grille cipher"""
+        new_key = ""
+        # table for key transformation
+        key_transform_table = list("1234567890" + string.ascii_letters)
+        for i in range(self.num_groups):
             key_index = 0
-            if (i == self.num_groups):
-                break
-            for j in range(62):
-                if (key[i] == self.key_transform_table[j]):
+            for j in range(len(key_transform_table)):
+                if key[i] == key_transform_table[j]:
                     key_index = j
                     break
-            self.key += "".join(str((key_index % 4 + 1)))
-        if len(self.key) < self.num_groups:
-            self.key += "1" * (self.num_groups - len(self.key))
-            
+            new_key += str((key_index % 4 + 1))
+        if len(new_key) < self.num_groups:
+            new_key += "1" * (self.num_groups - len(new_key))
+        return new_key
+
     def encrypt(self, plaintext):
         """Encrpyt plaintext using Grille cipher"""
         # store the input key into the position_key array
