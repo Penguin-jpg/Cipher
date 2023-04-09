@@ -1,7 +1,7 @@
 class Grille:
     def __init__(self, key, num_groups=9, num_members=4):
         # initialize the selection groups of grille matrix position (base on 6 x 6 grille matrix)
-        self.key = key
+        self.key = ""
         self.num_groups = num_groups
         self.num_members = num_members
         self.position_matrix = [[0] * num_members for _ in range(self.num_groups)]
@@ -16,7 +16,22 @@ class Grille:
             [14, 10, 23, 27],
             [15, 16, 22, 21],
         ]
-
+        self.key_transform_table = ["0"] * 62
+        self.key_transform_table = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0",
+                                    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+                                    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
+        for i in range(len(key)):
+            key_index = 0
+            if (i == self.num_groups):
+                break
+            for j in range(62):
+                if (key[i] == self.key_transform_table[j]):
+                    key_index = j
+                    break
+            self.key += "".join(str((key_index % 4 + 1)))
+        if len(self.key) < self.num_groups:
+            self.key += "1" * (self.num_groups - len(self.key))
+            
     def encrypt(self, plaintext):
         """Encrpyt plaintext using Grille cipher"""
         # store the input key into the position_key array
@@ -105,33 +120,20 @@ class Grille:
 
 if __name__ == "__main__":
     # input the text and key to start encrypt (the key must be 9 numbers string in range 1~4)
-    input_text1 = "thisistesttextwithover36numbersandalphabetsa1085509"
-    input_text2 = "shortertextwithin36length"
-    input_text3 = "abcdefghijklmnopqrstuvwxyz012345678"
-    key = "143424314"
+    input_text1 = "ThismagazineisavailableinanybigcityinJapanShemiscalculatedtheamountofbrothinhersoupandinadvertentlyboileditalloff"
+    input_text2 = "456ThismagazineisavailableinanybigcityinJapanShemiscalculatedtheamountofbrothinhersoupandinadvertentlyboileditalloff123"
+    key = "DeT3Qhx6j8SQ7OL6PwlsHjcha9JUpyXD"
     num_groups, num_members = 9, 4
     grille = Grille(key, num_groups, num_members)
 
-    # encrypt_text1 = grille_encrpyt(input_text1, input_key, selection_group)
     print("input text1: " + input_text1)
     encrypted_text1 = grille.encrypt(input_text1)
     print("encrypted text1: " + encrypted_text1)
-    # decrypt_text1 = grille_decrypt(encrypt_text1, input_key, selection_group)
     decrypted_text1 = grille.decrypt(encrypted_text1)
     print("decrypted text1: " + decrypted_text1)
 
-    # encrypt_text1 = grille_encrpyt(input_text1, input_key, selection_group)
     print("input text2: " + input_text2)
     encrypted_text2 = grille.encrypt(input_text2)
     print("encrypted text2: " + encrypted_text2)
-    # decrypt_text1 = grille_decrypt(encrypt_text1, input_key, selection_group)
     decrypted_text2 = grille.decrypt(encrypted_text2)
     print("decrypted text2: " + decrypted_text2)
-
-    # encrypt_text1 = grille_encrpyt(input_text1, input_key, selection_group)
-    print("input text3: " + input_text3)
-    encrypted_text3 = grille.encrypt(input_text3)
-    print("encrypted text3: " + encrypted_text3)
-    # decrypt_text1 = grille_decrypt(encrypt_text1, input_key, selection_group)
-    decrypted_text3 = grille.decrypt(encrypted_text3)
-    print("decrypted text3: " + decrypted_text3)
