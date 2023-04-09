@@ -28,9 +28,8 @@ import random
 class Gronsfeld:
     def __init__(self, key, alphabet=string.ascii_lowercase):
         self.alphabet = alphabet
-        # self.key = "".join(alphabet[i] for i in key)
         self.key = key
-        self._prepare_key(splits=[random.randint(1, 2) for _ in range(10)], original_length=len(key))
+        self._prepare_key(len(key))
 
     def _key_to_all_nums(self):
         """Turn every char in key to number"""
@@ -42,13 +41,12 @@ class Gronsfeld:
         self.key = "".join(random.sample(self.key, len(self.key)))
         print("shuffle key: " + self.key)
 
-    def _random_split(self, splits):
+    def _random_split(self):
         """Randomly split key into k groups within range [0,25] and turn them to letters"""
         splited_key = []
-        for split in splits:
-            if split > len(self.key):
-                break
-            if split == 2:
+        while len(self.key) > 0:
+            split = random.randint(1, 2)
+            if split == 2 and len(self.key) >= 2:
                 # if split to length 2, use (a * b + randint(a, b)) % 26 as new key
                 a, b = map(int, self.key[:split])
                 if a > b:  # make sure a < b
@@ -63,25 +61,25 @@ class Gronsfeld:
         self.key = "".join(self.alphabet[key] for key in splited_key)
         print("random split key: " + self.key)
 
-    def _pad_to_original_length(self, original_length):
-        """Pad random alphabet to reach original length"""
-        length_diff = original_length - len(self.key)
+    def _pad_to_target_length(self, length):
+        """Pad random alphabet to reach specific length"""
+        length_diff = length - len(self.key)
         for _ in range(length_diff):
             self.key += self.alphabet[random.randint(0, 25)]
         print("padded key: " + self.key)
 
-    def _prepare_key(self, splits, original_length):
+    def _prepare_key(self, target_length):
         self._key_to_all_nums()
         self._shuffle_key()
-        self._random_split(splits)
-        self._pad_to_original_length(original_length)
+        self._random_split()
+        self._pad_to_target_length(target_length)
 
     def _autokey(self, plaintext):
         """add plaintext[:length_diff] to key and use prepare_key"""
         length_diff = len(plaintext) - len(self.key)
         self.key += plaintext[:length_diff]
         print("added plaintext: " + self.key)
-        self._prepare_key(splits=[random.randint(1, 2) for _ in range(10)], original_length=len(plaintext))
+        self._prepare_key(len(plaintext))
         self._shuffle_key()
         print("autokey: " + self.key)
 
