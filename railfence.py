@@ -2,92 +2,97 @@
 Code is based on: https://www.geeksforgeeks.org/rail-fence-cipher-encryption-decryption/
 """
 
+
 class RailFence:
-    def encrypt(self, text, key):
+    def __init__(self, key):
+        self.key = key
+
+    def _key_transform(self, key, text):
+        """Make key valid for Rail Fence cipher"""
+        # TODO: 處理包含英文的key
         # key = 軌道數量
         # 若太多軌道的話會沒有意義，因此設計以下程式
-        if (len(text) <= 10): key = 2  # 若原文長度 <= 10，key = 2 (兩軌)
+        if len(text) <= 10:
+            key = 2  # 若原文長度 <= 10，key = 2 (兩軌)
         else:
             key = int(key) % len(text)  # 若原文長度 > 10，取 key 和原文長度的餘數
-            if (key == 0 or key == 1): key = 2  # 若餘數剛好為 0 或 1，key = 2 (兩軌)
+            if key == 0 or key == 1:
+                key = 2  # 若餘數剛好為 0 或 1，key = 2 (兩軌)
+        return key
 
-        rail = [['\n' for i in range(len(text))]
-                    for j in range(key)]
+    def encrypt(self, plaintext):
+        """Encrypt plaintext using Rail Fence cipher"""
+        self.key = self._key_transform(self.key, plaintext)
+
+        rail = [["\n" for _ in range(len(plaintext))] for _ in range(self.key)]
 
         dir_down = False
         row, col = 0, 0
 
-        for i in range(len(text)):
-            if ((row == 0) or (row == key - 1)):
+        for i in range(len(plaintext)):
+            if row == 0 or row == self.key - 1:
                 dir_down = not dir_down
 
-            rail[row][col] = text[i]
+            rail[row][col] = plaintext[i]
             col += 1
-
-            if (dir_down): row += 1
-            else: row -= 1
+            row += 1 if dir_down else -1
 
         result = []
-        for i in range(key):
-            for j in range(len(text)):
-                if rail[i][j] != '\n':
+        for i in range(self.key):
+            for j in range(len(plaintext)):
+                if rail[i][j] != "\n":
                     result.append(rail[i][j])
 
-        return("".join(result))
+        return "".join(result)
 
-
-    def decrypt(self, cipher, key):
-        if (len(cipher) <= 10): key = 2
-        else:
-            key = int(key) % len(cipher)
-            if (key == 0 or key == 1): key = 2
-
-        rail = [['\n' for i in range(len(cipher))]
-                    for j in range(key)]
+    def decrypt(self, ciphertext):
+        """Decrypt ciphertext using Rail Fence cipher"""
+        rail = [["\n" for _ in range(len(ciphertext))] for _ in range(self.key)]
 
         dir_down = None
         row, col = 0, 0
 
-        for i in range(len(cipher)):
-            if (row == 0):
+        for i in range(len(ciphertext)):
+            if row == 0:
                 dir_down = True
-            if (row == key - 1):
+            if row == self.key - 1:
                 dir_down = False
 
-            rail[row][col] = '*'
+            rail[row][col] = "*"
             col += 1
-
-            if dir_down: row += 1
-            else: row -= 1
+            row += 1 if dir_down else -1
 
         index = 0
-        for i in range(key):
-            for j in range(len(cipher)):
-                if ((rail[i][j] == '*') and (index < len(cipher))):
-                    rail[i][j] = cipher[index]
+        for i in range(self.key):
+            for j in range(len(ciphertext)):
+                if rail[i][j] == "*" and index < len(ciphertext):
+                    rail[i][j] = ciphertext[index]
                     index += 1
 
         result = []
         row, col = 0, 0
-        for i in range(len(cipher)):
-            if (row == 0): dir_down = True
-            if (row == key - 1): dir_down = False
+        for i in range(len(ciphertext)):
+            if row == 0:
+                dir_down = True
+            if row == self.key - 1:
+                dir_down = False
 
-            if (rail[row][col] != '*'):
+            if rail[row][col] != "*":
                 result.append(rail[row][col])
                 col += 1
 
-            if (dir_down): row += 1
-            else: row -= 1
+            row += 1 if dir_down else -1
 
-        return("".join(result))
+        return "".join(result)
 
-if (__name__ == "__main__"):
+
+if __name__ == "__main__":
     key = "7616864623"
-    plain_text = "helloworld123"
-    rail_fence = RailFence()
-
-    encrypted = rail_fence.encrypt(plain_text, key)
-    print(encrypted)
-    decrypted = rail_fence.decrypt(encrypted, key)
-    print(decrypted)
+    plaintext = "helloworld123"
+    # key = "DeT3Qhx6j8SQ7OL6PwlsHjcha9JUpyXD"
+    # plaintext = "456ThismagazineisavailableinanybigcityinJapanShemiscalculatedtheamountofbrothinhersoupandinadvertentlyboileditalloff123"
+    rail_fence = RailFence(key)
+    encrypted = rail_fence.encrypt(plaintext)
+    print("encrypted: " + encrypted)
+    decrypted = rail_fence.decrypt(encrypted)
+    print("decrypted: " + decrypted)
