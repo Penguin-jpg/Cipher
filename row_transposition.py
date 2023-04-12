@@ -5,8 +5,8 @@ import math
 class RowTransposition:
     def __init__(self, key, text):
         self.key = self._key_transform(key)
-        self.num_cols = len(self.key)
-        self.num_rows = math.ceil(len(text) / self.num_cols)
+        # self.num_cols = len(self.key)
+        # self.num_rows = math.ceil(len(text) / self.num_cols)
 
     def _key_transform(self, key):
         """Make key valid for Grille cipher"""
@@ -26,6 +26,8 @@ class RowTransposition:
 
     def encrypt(self, plaintext):
         """Encrpyt plaintext using Row transposition cipher"""
+        self.num_cols = len(self.key)
+        self.num_rows = math.ceil(len(plaintext) / self.num_cols)
         ciphertext = ""
         table = [[""] * self.num_cols for _ in range(self.num_rows)]
 
@@ -51,6 +53,8 @@ class RowTransposition:
 
     def decrypt(self, ciphertext):
         """Decrypt ciphertext using Row transposition cipher"""
+        self.num_cols = len(self.key)
+        self.num_rows = math.ceil(len(ciphertext) / self.num_cols)
         plaintext = ""
         table = [[""] * self.num_cols for _ in range(self.num_rows)]
 
@@ -64,6 +68,9 @@ class RowTransposition:
         for row in table:
             plaintext += "".join(row)
 
+        position_of_x = plaintext.find("x")
+        if position_of_x != -1:
+            return plaintext[:position_of_x]
         return plaintext
 
 

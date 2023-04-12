@@ -2,76 +2,97 @@
 Code is based on https://www.geeksforgeeks.org/baconian-cipher/
 """
 
+import secrets
+import string
+from functools import partial
+
 
 class Baconian:
     def __init__(self):
         # Added Numbers and an extra digit, because 2**6 > 36 > 2**5.
         # Added lowercase letters, which can fit, since 2**6 > 62
+        self.AVAILABLE_CHARS = string.ascii_letters + string.digits
         self.table = {
-            "A": "aaaaaa",
-            "B": "aaaaab",
-            "C": "aaaaab",
-            "D": "aaaabb",
-            "E": "aaabaa",
-            "F": "aaabab",
-            "G": "aaabba",
-            "H": "aaabbb",
-            "I": "aabaaa",
-            "J": "aabaab",
-            "K": "aababa",
-            "L": "aababb",
-            "M": "aabbaa",
-            "N": "aabbab",
-            "O": "aabbba",
-            "P": "aabbbb",
-            "Q": "abaaaa",
-            "R": "abaaab",
-            "S": "abaaba",
-            "T": "abaabb",
-            "U": "ababaa",
-            "V": "ababab",
-            "W": "ababba",
-            "X": "ababbb",
-            "Y": "abbaaa",
-            "Z": "abbaab",
-            "a": "abbaba",
-            "b": "abbabb",
-            "c": "abbbaa",
-            "d": "abbbab",
-            "e": "abbbba",
-            "f": "abbbbb",
-            "g": "baaaaa",
-            "h": "baaaab",
-            "i": "baaaba",
-            "j": "baaabb",
-            "k": "baabaa",
-            "l": "baabab",
-            "m": "baabba",
-            "n": "baabbb",
-            "o": "babaaa",
-            "p": "babaab",
-            "q": "bababa",
-            "r": "bababb",
-            "s": "babbaa",
-            "t": "babbab",
-            "u": "babbba",
-            "v": "babbbb",
-            "w": "bbaaaa",
-            "x": "bbaaab",
-            "y": "bbaaba",
-            "z": "bbaabb",
-            "0": "bbabaa",
-            "1": "bbabab",
-            "2": "bbabba",
-            "3": "bbabbb",
-            "4": "bbbaaa",
-            "5": "bbbaab",
-            "6": "bbbaba",
-            "7": "bbbabb",
-            "8": "bbbbaa",
-            "9": "bbbbab"
+            key: value
+            for key, value in zip(
+                self.AVAILABLE_CHARS,
+                self._produce_amount_keys(
+                    num_keys=len(self.AVAILABLE_CHARS), available_chars=self.AVAILABLE_CHARS
+                ),
+            )
         }
+        # self.table = {
+        #     "A": "aaaaaa",
+        #     "B": "aaaaab",
+        #     "C": "aaaaab",
+        #     "D": "aaaabb",
+        #     "E": "aaabaa",
+        #     "F": "aaabab",
+        #     "G": "aaabba",
+        #     "H": "aaabbb",
+        #     "I": "aabaaa",
+        #     "J": "aabaab",
+        #     "K": "aababa",
+        #     "L": "aababb",
+        #     "M": "aabbaa",
+        #     "N": "aabbab",
+        #     "O": "aabbba",
+        #     "P": "aabbbb",
+        #     "Q": "abaaaa",
+        #     "R": "abaaab",
+        #     "S": "abaaba",
+        #     "T": "abaabb",
+        #     "U": "ababaa",
+        #     "V": "ababab",
+        #     "W": "ababba",
+        #     "X": "ababbb",
+        #     "Y": "abbaaa",
+        #     "Z": "abbaab",
+        #     "a": "abbaba",
+        #     "b": "abbabb",
+        #     "c": "abbbaa",
+        #     "d": "abbbab",
+        #     "e": "abbbba",
+        #     "f": "abbbbb",
+        #     "g": "baaaaa",
+        #     "h": "baaaab",
+        #     "i": "baaaba",
+        #     "j": "baaabb",
+        #     "k": "baabaa",
+        #     "l": "baabab",
+        #     "m": "baabba",
+        #     "n": "baabbb",
+        #     "o": "babaaa",
+        #     "p": "babaab",
+        #     "q": "bababa",
+        #     "r": "bababb",
+        #     "s": "babbaa",
+        #     "t": "babbab",
+        #     "u": "babbba",
+        #     "v": "babbbb",
+        #     "w": "bbaaaa",
+        #     "x": "bbaaab",
+        #     "y": "bbaaba",
+        #     "z": "bbaabb",
+        #     "0": "bbabaa",
+        #     "1": "bbabab",
+        #     "2": "bbabba",
+        #     "3": "bbabbb",
+        #     "4": "bbbaaa",
+        #     "5": "bbbaab",
+        #     "6": "bbbaba",
+        #     "7": "bbbabb",
+        #     "8": "bbbbaa",
+        #     "9": "bbbbab",
+        # }
         self.reverse_table = {value: key for key, value in self.table.items()}
+
+    def _produce_amount_keys(self, num_keys, available_chars):
+        keys = set()
+        pickchar = partial(secrets.choice, available_chars)
+        while len(keys) < num_keys:
+            keys |= {"".join([pickchar() for _ in range(6)]) for _ in range(num_keys - len(keys))}
+        return keys
 
     def encrypt(self, plaintext):
         """Encrypt plaintext using Baconian cipher"""
@@ -95,8 +116,8 @@ class Baconian:
 
 
 if __name__ == "__main__":
-    # key = ""
-    plaintext = "helloworld123"
+    key = "DeT3Qhx6j8SQ7OL6PwlsHjcha9JUpyXD"
+    plaintext = "456ThismagazineisavailableinanybigcityinJapanShemiscalculatedtheamountofbrothinhersoupandinadvertentlyboileditalloff123"
     print("plaintext: " + plaintext)
     baconian = Baconian()
     encrypted = baconian.encrypt(plaintext)

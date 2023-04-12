@@ -5,12 +5,15 @@ Code is based on https://www.geeksforgeeks.org/implementation-affine-cipher/
 
 class Affine:
     def __init__(self, key):
-        self.key = key
+        self.key = self._key_transform(key)
 
     def _key_transform(self, key):
         """Make key valid for Affine cipher"""
         # TODO: 將key轉成affine能用的格式
-        return key
+        new_key = 0
+        for char in key:
+            new_key += ord(char)
+        return [17, new_key]
 
     def _egcd(self, a, b):
         """Extended Euclidean Algorithm for finding modular inverse"""
@@ -83,10 +86,10 @@ class Affine:
 
 
 if __name__ == "__main__":
-    key = [17, 20]
-    plaintext = "Hello 123"
-    # key = "DeT3Qhx6j8SQ7OL6PwlsHjcha9JUpyXD"
-    # plaintext = "456ThismagazineisavailableinanybigcityinJapanShemiscalculatedtheamountofbrothinhersoupandinadvertentlyboileditalloff123"
+    # key = [17, 20]
+    # plaintext = "Hello 123"
+    key = "DeT3Qhx6j8SQ7OL6PwlsHjcha9JUpyXD"
+    plaintext = "456ThismagazineisavailableinanybigcityinJapanShemiscalculatedtheamountofbrothinhersoupandinadvertentlyboileditalloff123"
     affine = Affine(key)
     encrypted = affine.encrypt(plaintext)
     print("encrypted: " + encrypted)
