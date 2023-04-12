@@ -36,11 +36,9 @@ class Gronsfeld:
         """Turn every char in key to number"""
         for i, char in enumerate(self.AVAILABLE_CHARS):
             self.key = self.key.replace(char, str(i))
-        print("numeric key: " + self.key)
 
     def _shuffle_key(self):
         self.key = "".join(random.sample(self.key, len(self.key)))
-        print("shuffle key: " + self.key)
 
     def _random_split(self):
         """Randomly split key into k groups within range [1,2] and turn them to letters"""
@@ -58,9 +56,7 @@ class Gronsfeld:
                 # if split to length 1, use this char % 52 as new key
                 splited_key.append(int(self.key[:split][0]) % len(self.AVAILABLE_CHARS))
             self.key = self.key[split:]
-        print(f"splited key: {splited_key}")
         self.key = "".join(self.AVAILABLE_CHARS[key] for key in splited_key)
-        print("random split key: " + self.key)
 
     def _pad_to_target_length(self, length):
         """Pad random alphabet to reach specific length"""
@@ -68,7 +64,6 @@ class Gronsfeld:
         for _ in range(length_diff):
             # randomly select a char from AVAILABLE_CHARS
             self.key += random.choice(self.AVAILABLE_CHARS)
-        print("padded key: " + self.key)
 
     def _prepare_key(self, target_length):
         self._key_to_all_nums()
@@ -80,10 +75,8 @@ class Gronsfeld:
         """add plaintext[:length_diff] to key and use prepare_key"""
         length_diff = len(plaintext) - len(self.key)
         self.key += plaintext[:length_diff]
-        print("added plaintext: " + self.key)
         self._prepare_key(len(plaintext))
         self._shuffle_key()
-        print("autokey: " + self.key)
 
     def _rotate_string(self, string, reverse=False):
         """Shift a string using a key (use reverse=True for decrypt)"""
