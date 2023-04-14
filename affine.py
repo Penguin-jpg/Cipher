@@ -2,18 +2,23 @@
 Code is based on https://www.geeksforgeeks.org/implementation-affine-cipher/
 """
 
+import random
+
 
 class Affine:
     def __init__(self, key):
+        self.first_key_table = []
+        for i in range(11, 62):
+            if i % 2 != 0 and i % 31 != 0:
+                self.first_key_table.append(i)
         self.key = self._key_transform(key)
 
     def _key_transform(self, key):
         """Make key valid for Affine cipher"""
-        # TODO: 將key轉成affine能用的格式
         new_key = 0
         for char in key:
             new_key += ord(char)
-        return [17, new_key]
+        return [random.choice(self.first_key_table), new_key % 62]
 
     def _egcd(self, a, b):
         """Extended Euclidean Algorithm for finding modular inverse"""

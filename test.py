@@ -9,8 +9,11 @@ from row_transposition import RowTransposition
 from grille import Grille
 
 
-key = "DeT3Qhx6j8SQ7OL6PwlsHjcha9JUpyXD"
-plaintext = "456ThismagazineisavailableinanybigcityinJapanShemiscalculatedtheamountofbrothinhersoupandinadvertentlyboileditalloff123"
+# key = "DeT3Qhx6j8SQ7OL6PwlsHjcha9JUpyXD"
+# plaintext =
+# "456ThismagazineisavailableinanybigcityinJapanShemiscalculatedtheamountofbrothinhersoupandinadvertentlyboileditalloff123"
+key = "joSFzkRgUgjhoz4RWkAhBLRnwho8ZAm7"
+plaintext = "789Yesphilosophicallyspeakingalltweetsarebadbuttobefullyhumanistorebelagainstthisfacttosendourterribletweetsoutintotheuniverseanyway44256321"
 
 row_transposition = RowTransposition(key, plaintext)
 baconian = Baconian()
@@ -42,22 +45,3 @@ for method in methods[::-1]:
     print("decrypted: ")
     print(decrypted)
     print()
-
-# encrypted = row_transposition.encrypt(plaintext)
-# print("row transposition encrypted: " + encrypted)
-
-# encrypted = grille.encrypt(encrypted)
-# print("grille encrypted: " + encrypted)
-
-# encrypted = gronsfeld.encrypt(encrypted)
-# print("gronsfeld encrypted: " + encrypted)
-# print()
-
-# decrypted = gronsfeld.decrypt(encrypted)
-# print("gronsfeld decrypted: " + decrypted)
-
-# decrypted = grille.decrypt(decrypted)
-# print("grille decrypted: " + decrypted)
-
-# decrypted = row_transposition.decrypt(decrypted)
-# print("row transposition decrypted: " + decrypted)
