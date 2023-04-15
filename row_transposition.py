@@ -3,10 +3,8 @@ import math
 
 
 class RowTransposition:
-    def __init__(self, key, text):
+    def __init__(self, key):
         self.key = self._key_transform(key)
-        # self.num_cols = len(self.key)
-        # self.num_rows = math.ceil(len(text) / self.num_cols)
 
     def _key_transform(self, key):
         """Make key valid for Grille cipher"""

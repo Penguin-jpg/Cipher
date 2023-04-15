@@ -15,7 +15,7 @@ from grille import Grille
 key = "joSFzkRgUgjhoz4RWkAhBLRnwho8ZAm7"
 plaintext = "789Yesphilosophicallyspeakingalltweetsarebadbuttobefullyhumanistorebelagainstthisfacttosendourterribletweetsoutintotheuniverseanyway44256321"
 
-row_transposition = RowTransposition(key, plaintext)
+row_transposition = RowTransposition(key)
 baconian = Baconian()
 rail_fence = RailFence(key)
 affine = Affine(key)
