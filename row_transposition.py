@@ -10,15 +10,12 @@ class RowTransposition:
         """Make key valid for Grille cipher"""
         # 先把key中的數字提取出來並轉成set確保不重複
         digits = set(re.findall(r"\d+", key))
+
+        # 把缺的數字補進去變連續數字
+        digits = digits.union([str(i) for i in range(1, int(max(digits)))])
+
         # 將數字合成字串
         numeric_key = "".join(digits)
-
-        index = 0
-        # 把缺的數字補進去變連續數字
-        for i in range(1, int(max(numeric_key))):
-            if str(i) not in numeric_key:
-                numeric_key = numeric_key[:index] + str(i) + numeric_key[index:]
-                index += 2
 
         return numeric_key
 
@@ -76,7 +73,7 @@ if __name__ == "__main__":
     key = "DeT3Qhx6j8SQ7OL6PwlsHjcha9JUpyXD"
     plaintext = "456ThismagazineisavailableinanybigcityinJapanShemiscalculatedtheamountofbrothinhersoupandinadvertentlyboileditalloff123"
     print("original key: " + key)
-    rowTransposition = RowTransposition(key, plaintext)
+    rowTransposition = RowTransposition(key)
     encrypted = rowTransposition.encrypt(plaintext)
     print("encrypted: " + encrypted)
     decrypted = rowTransposition.decrypt(encrypted)

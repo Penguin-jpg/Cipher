@@ -30,6 +30,7 @@ class Gronsfeld:
         self.AVAILABLE_CHARS = string.ascii_letters
         self.char_set = set(self.AVAILABLE_CHARS)
         self.key = key
+        self._autokey_finished = False
         self._prepare_key(len(key))
 
     def _key_to_all_nums(self):
@@ -109,7 +110,9 @@ class Gronsfeld:
 
     def encrypt(self, plaintext):
         """Encrypt plaintext using Vigenere cipher"""
-        self._autokey(plaintext)
+        if not self._autokey_finished:
+            self._autokey(plaintext)
+            self._autokey_finished = True
         return self._rotate_string(plaintext)
 
     def decrypt(self, ciphertext):
