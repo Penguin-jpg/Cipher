@@ -9,14 +9,12 @@ import string
 """
 流程: 
  - key:
-    - 階段1(準備初始key):
-        1. 先將key中的每個字元轉成對應的ascii
-        2. 按照[2,3,2,3]的切割長度循環切割字串
-        3. 將切割出的數字對應到[a-zA-Z0-9]
-        4. 由於做完之後key長度會變長，所以要切到跟原本一樣長
-    - 階段2(Autokey):
-        1. 從明文中取字元，共取len(plaintext)-len(key)個，並接到目前的key後面
-        2. 重複階段1的2~3步驟
+    1. 先將key中的每個字元轉成對應的ascii
+    2. 按照[2,3,2,3]的切割長度循環切割字串
+    3. 將切割出的數字對應到[a-zA-Z0-9]
+    4. 重複1~3步3次
+    4. 由於做完之後key長度會變長，所以要切到跟原本一樣長
+    (註: 因為在demo過程中收到的plaintext是來自上一個方法的密文，而非原本的明文，若用一般的Autokey方法會失敗，所以才改成這種方式)
 - 加解密:
     目前和一般的Vigenere cipher方法一樣
 """
@@ -26,8 +24,8 @@ class Gronsfeld:
     def __init__(self, key):
         self.AVAILABLE_CHARS = string.digits + string.ascii_letters + "-+="
         self.key = key
-        self._autokey_finished = False
-        self._process_key()
+        # 三次之後重複的字有點多，先做三次就好
+        self._process_key(repeat_times=3, truncate_length=len(key))
 
     def _key_to_all_nums(self):
         """Turn every char in key to number"""
@@ -45,20 +43,17 @@ class Gronsfeld:
             splited_keys.append(num % len(self.AVAILABLE_CHARS))
             self.key = self.key[split:]
             index = (index + 1) % len(splits)
-        self.key = "".join(self.AVAILABLE_CHARS[key] for key in splited_keys)
 
-    def _process_key(self):
-        original_length = len(self.key)
-        self._key_to_all_nums()
-        self._split_to_groups()
-        # 因為做完上面的步驟後 key 長度會變長，所以要切到原長度
-        self.key = self.key[:original_length]
+        self.key = "".join(self.AVAILABLE_CHARS[splited_key] for splited_key in splited_keys)
 
-    def _autokey(self, plaintext):
-        """add plaintext[:length_diff] to key and do process_key again"""
-        length_diff = len(plaintext) - len(self.key)
-        self.key += plaintext[:length_diff]
-        self._process_key()
+    def _process_key(self, repeat_times, truncate_length):
+        """Repeat process for n times"""
+        for _ in range(repeat_times):
+            self._key_to_all_nums()
+            self._split_to_groups()
+
+        # 由於上面的步驟重複多次後會使key變得更長，所以要切回原本的長度
+        self.key = self.key[:truncate_length]
 
     def _rotate_string(self, string, reverse=False):
         """Shift a string using a key (use reverse=True for decrypt)"""
@@ -82,9 +77,6 @@ class Gronsfeld:
 
     def encrypt(self, plaintext):
         """Encrypt plaintext using Vigenere cipher"""
-        if not self._autokey_finished:
-            self._autokey(plaintext)
-            self._autokey_finished = True
         return self._rotate_string(plaintext)
 
     def decrypt(self, ciphertext):
@@ -93,12 +85,10 @@ class Gronsfeld:
 
 
 if __name__ == "__main__":
-    # key = "7616864623"
-    # plaintext = "helloworld123"
-    # key = "9b33a532fd9e6"
-    # plaintext = "thismagazineisavailableinanybigcityinjapan123456789"
     key = "DeT3Qhx6j8SQ7OL6PwlsHjcha9JUpyXD"
+    # key = "joSFzkRgUgjhoz4RWkAhBLRnwho8ZAm7"
     plaintext = "456ThismagazineisavailableinanybigcityinJapanShemiscalculatedtheamountofbrothinhersoupandinadvertentlyboileditalloff123"
+    # plaintext = "789Yesphil=osophicallyspeakingalltweetsarebadbuttobefullyhumanistorebelagainstthisfacttosendourterribletw=eetsoutintothe+universeanyway4425-6321"
     print("original key: " + key)
     gronsfeld = Gronsfeld(key)
     encrypted = gronsfeld.encrypt(plaintext)

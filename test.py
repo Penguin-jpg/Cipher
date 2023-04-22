@@ -12,15 +12,15 @@ from grille import Grille
 # key = "DeT3Qhx6j8SQ7OL6PwlsHjcha9JUpyXD"
 # plaintext =
 # "456ThismagazineisavailableinanybigcityinJapanShemiscalculatedtheamountofbrothinhersoupandinadvertentlyboileditalloff123"
-key = "joSFzkRgUgjhoz4RWkAhBLRnwho8ZAm7"
+self.key = "joSFzkRgUgjhoz4RWkAhBLRnwho8ZAm7"
 plaintext = "789Yesphilosophicallyspeakingalltweetsarebadbuttobefullyhumanistorebelagainstthisfacttosendourterribletweetsoutintotheuniverseanyway44256321"
 
-row_transposition = RowTransposition(key)
-baconian = Baconian(key)
-rail_fence = RailFence(key)
-affine = Affine(key)
-grille = Grille(key)
-gronsfeld = Gronsfeld(key)
+row_transposition = RowTransposition(self.key)
+baconian = Baconian(self.key)
+rail_fence = RailFence(self.key)
+affine = Affine(self.key)
+grille = Grille(self.key)
+gronsfeld = Gronsfeld(self.key)
 
 methods = [
     row_transposition,

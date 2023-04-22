@@ -21,11 +21,11 @@ gronsfeld = Gronsfeld(key)
 
 methods = [
     row_transposition,
-    # baconian,
-    # rail_fence,
-    # affine,
-    # grille,
-    # gronsfeld,
+    baconian,
+    rail_fence,
+    affine,
+    grille,
+    gronsfeld,
 ]
 ciphertext = plaintext
 

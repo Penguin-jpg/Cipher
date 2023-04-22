@@ -9,7 +9,8 @@ from row_transposition import RowTransposition
 from grille import Grille
 
 key = "joSFzkRgUgjhoz4RWkAhBLRnwho8ZAm7"
-encrypted = "YYrTDyKbMnhvaw+JYkrmd3KjwngX1AhWAyOBkyRxQhjepnR4-lEcpUGvrtc8-sEOhFOEDbRaUoevDk+JIpAfi2LFsknYNlF+yFKEso4qQcAvanRJ9zuuCH+aEskTHEm2ryShHYD+uX+Y"
+answer = "789Yesphilosophicallyspeakingalltweetsarebadbuttobefullyhumanistorebelagainstthisfacttosendourterribletweetsoutintotheuniverseanyway44256321"
+encrypted = "OoaQaZHYF5vaTK7zH64UGfER+=W7xbgUG1isjLLgHkz4-Tk8aYLYhFEeDwUO6sifFAMm5B3tqetvtpxr=8Hyf+ep85eo55n6M51eQRrT=mGqiKYzKaKhvmGr9j1hXfgnO+UKFb2HJQPC8CqM"
 
 gronsfeld = Gronsfeld(key)
 grille = Grille(key)
@@ -20,11 +21,11 @@ row_transposition = RowTransposition(key)
 
 
 methods = [
-    # gronsfeld,
-    # grille,
-    # affine,
-    # rail_fence,
-    # baconian,
+    gronsfeld,
+    grille,
+    affine,
+    rail_fence,
+    baconian,
     row_transposition,
 ]
 
@@ -34,3 +35,6 @@ for method in methods:
     print("decrypted: ")
     print(plaintext)
     print()
+
+if plaintext == answer:
+    print("!")
