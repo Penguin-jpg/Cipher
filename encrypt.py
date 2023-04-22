@@ -13,7 +13,7 @@ key = "joSFzkRgUgjhoz4RWkAhBLRnwho8ZAm7"
 plaintext = "789Yesphilosophicallyspeakingalltweetsarebadbuttobefullyhumanistorebelagainstthisfacttosendourterribletweetsoutintotheuniverseanyway44256321"
 
 row_transposition = RowTransposition(key)
-baconian = Baconian()
+baconian = Baconian(key)
 rail_fence = RailFence(key)
 affine = Affine(key)
 grille = Grille(key)
@@ -21,16 +21,16 @@ gronsfeld = Gronsfeld(key)
 
 methods = [
     row_transposition,
-    baconian,
-    rail_fence,
-    affine,
-    grille,
-    gronsfeld,
+    # baconian,
+    # rail_fence,
+    # affine,
+    # grille,
+    # gronsfeld,
 ]
-encrypted = plaintext
+ciphertext = plaintext
 
 for method in methods:
-    encrypted = method.encrypt(encrypted)
+    ciphertext = method.encrypt(ciphertext)
     print("encrypted: ")
-    print(encrypted)
+    print(ciphertext)
     print()

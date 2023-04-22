@@ -18,13 +18,13 @@ import string
         1. 從明文中取字元，共取len(plaintext)-len(key)個，並接到目前的key後面
         2. 重複階段1的2~3步驟
 - 加解密:
-    目前和一般的Vigenere方法一樣
+    目前和一般的Vigenere cipher方法一樣
 """
 
 
 class Gronsfeld:
     def __init__(self, key):
-        self.AVAILABLE_CHARS = string.digits + string.ascii_letters
+        self.AVAILABLE_CHARS = string.digits + string.ascii_letters + "-+="
         self.key = key
         self._autokey_finished = False
         self._process_key()
@@ -41,11 +41,8 @@ class Gronsfeld:
 
         while len(self.key) > 0:
             split = splits[index]
-            if len(self.key) >= split:
-                num = self.key[:split]
-                splited_keys.append(int(num) % len(self.AVAILABLE_CHARS))
-            else:
-                splited_keys.append(int(self.key[:split]) % len(self.AVAILABLE_CHARS))
+            num = sum(ord(char) for char in self.key[:split])
+            splited_keys.append(num % len(self.AVAILABLE_CHARS))
             self.key = self.key[split:]
             index = (index + 1) % len(splits)
         self.key = "".join(self.AVAILABLE_CHARS[key] for key in splited_keys)
@@ -68,11 +65,6 @@ class Gronsfeld:
         key_index, result = 0, ""
 
         for char in string:
-            # 不在AVAILABLE_CHARS內的字元就忽略
-            if char not in self.AVAILABLE_CHARS:
-                result += char
-                continue
-
             # char在AVAILABLE_CHARS的位置
             pos = self.AVAILABLE_CHARS.index(char)
             # 位移量

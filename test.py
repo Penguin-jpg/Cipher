@@ -16,7 +16,7 @@ key = "joSFzkRgUgjhoz4RWkAhBLRnwho8ZAm7"
 plaintext = "789Yesphilosophicallyspeakingalltweetsarebadbuttobefullyhumanistorebelagainstthisfacttosendourterribletweetsoutintotheuniverseanyway44256321"
 
 row_transposition = RowTransposition(key)
-baconian = Baconian()
+baconian = Baconian(key)
 rail_fence = RailFence(key)
 affine = Affine(key)
 grille = Grille(key)
@@ -39,9 +39,12 @@ for method in methods:
     print()
 
 print()
-decrypted = encrypted
-for method in methods[::-1]:
-    decrypted = method.decrypt(decrypted)
+plaintext = encrypted
+for i, method in enumerate(methods[::-1]):
+    plaintext = method.decrypt(plaintext)
     print("decrypted: ")
-    print(decrypted)
+    print(plaintext)
     print()
+
+if plaintext == plaintext:
+    print("!")

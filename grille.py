@@ -1,5 +1,13 @@
 import string
 
+"""
+流程: 
+ - key:
+    如果key長度不到9，就補1補到長度9
+- 加解密:
+    目前和原本的6x6 Grille cipher一樣
+"""
+
 
 class Grille:
     def __init__(self, key, num_groups=9, num_members=4):
@@ -43,7 +51,7 @@ class Grille:
         # the array to store the selected position of the grille matrix
         selected_position = [0] * self.num_groups
         # encrypted result
-        encrypted = ""
+        ciphertext = ""
         # check if the remain string length is larger than 36 or not
         larger_than_36 = False
 
@@ -66,7 +74,7 @@ class Grille:
                     position_key[j] = (position_key[j] + 1) % 4
                 selected_position.sort()
                 for j in range(self.num_groups):
-                    encrypted += (
+                    ciphertext += (
                         temp_text[selected_position[j] - 1]
                         if larger_than_36
                         else plaintext[selected_position[j] - 1]
@@ -75,7 +83,7 @@ class Grille:
             if not larger_than_36:
                 break
 
-        return encrypted
+        return ciphertext
 
     def decrypt(self, ciphertext):
         """Decrypt ciphertext using Grille cipher"""
@@ -84,7 +92,7 @@ class Grille:
         # the array to store the selected position of the grille matrix
         selected_position = [0] * self.num_groups
         # decryted result
-        decrypted = ""
+        plaintext = ""
         # the array to store the decrypt text character
         decrypt_array = ["0"] * (self.num_groups * self.num_members)
         # check if the remain string length is larger than 36 or not
@@ -111,15 +119,15 @@ class Grille:
                         else ciphertext[i * self.num_groups + j]
                     )
 
-            decrypted += "".join(decrypt_array)
+            plaintext += "".join(decrypt_array)
             if not larger_than_36:
-                # find where x is and cut there
-                position_of_x = decrypted.find("=")
-                if position_of_x != -1:
-                    return decrypted[:position_of_x]
+                # find where = is and cut there
+                split_position = plaintext.find("=")
+                if split_position != -1 and split_position == len(plaintext) - 1:
+                    return plaintext[:split_position]
                 break
 
-        return decrypted
+        return plaintext
 
 
 if __name__ == "__main__":

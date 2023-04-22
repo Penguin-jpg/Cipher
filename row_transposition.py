@@ -1,6 +1,14 @@
 import re
 import math
 
+"""
+流程: 
+ - key:
+    1. 將所有字元轉ascii後接起來
+- 加解密:
+    目前和原本的Row Transposition cipher一樣
+"""
+
 
 class RowTransposition:
     def __init__(self, key):
@@ -8,14 +16,24 @@ class RowTransposition:
 
     def _key_transform(self, key):
         """Make key valid for Grille cipher"""
-        # 先把key中的數字提取出來並轉成set確保不重複
-        digits = set(re.findall(r"\d+", key))
+        # 把所有字元轉ascii後接起來
+        digits = "".join(str(ord(char)) for char in key)
 
-        # 把缺的數字補進去變連續數字
-        digits = digits.union([str(i) for i in range(1, int(max(digits)))])
+        # 去除重複數字(順序不變)
+        deduplicated_digits = dict.fromkeys(digits)
+        # 如果有0要去掉
+        if "0" in deduplicated_digits:
+            deduplicated_digits.pop("0")
 
-        # 將數字合成字串
-        numeric_key = "".join(digits)
+        # 轉成字串
+        numeric_key = "".join(list(deduplicated_digits))
+
+        # 將缺的數字插到空隙中
+        index = 0
+        for num in range(1, int(max(numeric_key))):
+            if str(num) not in numeric_key:
+                numeric_key = numeric_key[:index] + str(num) + numeric_key[index:]
+                index += 2
 
         return numeric_key
 
@@ -26,10 +44,10 @@ class RowTransposition:
         ciphertext = ""
         table = [[""] * self.num_cols for _ in range(self.num_rows)]
 
-        num_x = self.num_cols - (len(plaintext) % self.num_cols)
+        length_diff = self.num_cols * self.num_rows - len(plaintext)
         # 補x到指定長度
-        if num_x != 0:
-            plaintext += "x" * num_x
+        if length_diff > 0:
+            plaintext += "x" * length_diff
 
         row_index, col_index = 0, 0
         for char in plaintext:
@@ -73,8 +91,8 @@ if __name__ == "__main__":
     key = "DeT3Qhx6j8SQ7OL6PwlsHjcha9JUpyXD"
     plaintext = "456ThismagazineisavailableinanybigcityinJapanShemiscalculatedtheamountofbrothinhersoupandinadvertentlyboileditalloff123"
     print("original key: " + key)
-    rowTransposition = RowTransposition(key)
-    encrypted = rowTransposition.encrypt(plaintext)
+    row_transposition = RowTransposition(key)
+    encrypted = row_transposition.encrypt(plaintext)
     print("encrypted: " + encrypted)
-    decrypted = rowTransposition.decrypt(encrypted)
+    decrypted = row_transposition.decrypt(encrypted)
     print("decrypted: " + decrypted)
