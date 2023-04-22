@@ -5,108 +5,88 @@ Code is based on
 """
 
 import string
-import random
 
 """
-目前構想步驟: 
- - 階段1(準備初始key):
-    1. 先將key中的每個英文轉成對應的index
-    2. 將字串打亂
-    3. 隨機分割key成k個長度1或2的group
-    4. 將每個group的值按照以下規則替換成英文
-        - 長度1: 將該字元轉數字mod52
-        - 長度2: 將字元a,b轉數字後相乘並加上randint(a,b)後mod52
-    5. 由於合併完後的key長度會變小，所以將key用[a-zA-Z]的隨機值補到原長度
- - 階段2(Autokey):
-    1. 從明文中取字元，共取len(plaintext)-len(key)個
-    2. 將英文全部轉數字
-    3. 重複階段1的2~5步驟
-    4. 將字串打亂
+流程: 
+ - key:
+    - 階段1(準備初始key):
+        1. 先將key中的每個字元轉成對應的ascii
+        2. 按照[2,3,2,3]的切割長度循環切割字串
+        3. 將切割出的數字對應到[a-zA-Z0-9]
+        4. 由於做完之後key長度會變長，所以要切到跟原本一樣長
+    - 階段2(Autokey):
+        1. 從明文中取字元，共取len(plaintext)-len(key)個，並接到目前的key後面
+        2. 重複階段1的2~3步驟
+- 加解密:
+    目前和一般的Vigenere方法一樣
 """
 
 
 class Gronsfeld:
     def __init__(self, key):
-        self.AVAILABLE_CHARS = string.ascii_letters
-        self.char_set = set(self.AVAILABLE_CHARS)
+        self.AVAILABLE_CHARS = string.digits + string.ascii_letters
         self.key = key
         self._autokey_finished = False
-        self._prepare_key(len(key))
+        self._process_key()
 
     def _key_to_all_nums(self):
         """Turn every char in key to number"""
-        for i, char in enumerate(self.AVAILABLE_CHARS):
-            self.key = self.key.replace(char, str(i))
+        for char in self.AVAILABLE_CHARS:
+            self.key = self.key.replace(char, str(ord(char)))
 
-    def _shuffle_key(self):
-        self.key = "".join(random.sample(self.key, len(self.key)))
+    def _split_to_groups(self):
+        """Randomly split key into k groups with length 2 or 3 and map them to AVAILABLE_CHARS"""
+        # 切割字元數會在 [2,3,2,3] 中循環
+        splits, index, splited_keys = [2, 3, 2, 3], 0, []
 
-    def _random_split(self):
-        """Randomly split key into k groups within range [1,2] and turn them to letters"""
-        splited_key = []
         while len(self.key) > 0:
-            split = random.randint(1, 2)
-            if split == 2 and len(self.key) >= 2:
-                # if split to length 2, use (a * b + randint(a, b)) % 52 as new key
-                a, b = map(int, self.key[:split])
-                if a > b:  # make sure a < b
-                    a, b = b, a
-                offset = random.randint(a, b)
-                splited_key.append((a * b + offset) % len(self.AVAILABLE_CHARS))
+            split = splits[index]
+            if len(self.key) >= split:
+                num = self.key[:split]
+                splited_keys.append(int(num) % len(self.AVAILABLE_CHARS))
             else:
-                # if split to length 1, use this char % 52 as new key
-                splited_key.append(int(self.key[:split][0]) % len(self.AVAILABLE_CHARS))
+                splited_keys.append(int(self.key[:split]) % len(self.AVAILABLE_CHARS))
             self.key = self.key[split:]
-        self.key = "".join(self.AVAILABLE_CHARS[key] for key in splited_key)
+            index = (index + 1) % len(splits)
+        self.key = "".join(self.AVAILABLE_CHARS[key] for key in splited_keys)
 
-    def _pad_to_target_length(self, length):
-        """Pad random alphabet to reach specific length"""
-        length_diff = length - len(self.key)
-        for _ in range(length_diff):
-            # randomly select a char from AVAILABLE_CHARS
-            self.key += random.choice(self.AVAILABLE_CHARS)
-
-    def _prepare_key(self, target_length):
+    def _process_key(self):
+        original_length = len(self.key)
         self._key_to_all_nums()
-        self._shuffle_key()
-        self._random_split()
-        self._pad_to_target_length(target_length)
+        self._split_to_groups()
+        # 因為做完上面的步驟後 key 長度會變長，所以要切到原長度
+        self.key = self.key[:original_length]
 
     def _autokey(self, plaintext):
-        """add plaintext[:length_diff] to key and use prepare_key"""
+        """add plaintext[:length_diff] to key and do process_key again"""
         length_diff = len(plaintext) - len(self.key)
         self.key += plaintext[:length_diff]
-        self._prepare_key(len(plaintext))
-        self._shuffle_key()
+        self._process_key()
 
     def _rotate_string(self, string, reverse=False):
         """Shift a string using a key (use reverse=True for decrypt)"""
-        key_pos = 0
-        shifted = ""
+        key_index, result = 0, ""
 
-        # Iterate through each char in the plaintext
         for char in string:
-            # Ignore characters not in the AVAILABLE_CHARS
-            if char not in self.char_set:
-                shifted += char
+            # 不在AVAILABLE_CHARS內的字元就忽略
+            if char not in self.AVAILABLE_CHARS:
+                result += char
                 continue
 
-            # Get the position in AVAILABLE_CHARS of that char
+            # char在AVAILABLE_CHARS的位置
             pos = self.AVAILABLE_CHARS.index(char)
-            # Calculate the shift based on the current character in the keyword
-            shift = self.AVAILABLE_CHARS.index(self.key[key_pos])
-            # If the copher is being reversed, make the shift negative.
-            if reverse:
-                shift *= -1
+            # 位移量
+            shift = self.AVAILABLE_CHARS.index(self.key[key_index])
+            # 解密時移動方向要反過來
+            shift *= -1 if reverse else 1
 
-            # Add shifted character to the string
+            # 位移
             new_pos = (pos + shift) % len(self.AVAILABLE_CHARS)
-            shifted += self.AVAILABLE_CHARS[new_pos]
+            result += self.AVAILABLE_CHARS[new_pos]
 
-            # Shift key position up 1, mod its length.
-            key_pos = (key_pos + 1) % len(self.key)
+            key_index = (key_index + 1) % len(self.key)
 
-        return shifted
+        return result
 
     def encrypt(self, plaintext):
         """Encrypt plaintext using Vigenere cipher"""
@@ -117,7 +97,7 @@ class Gronsfeld:
 
     def decrypt(self, ciphertext):
         """Decrypt ciphertext using Vigenere cipher"""
-        return self._rotate_string(ciphertext, True)
+        return self._rotate_string(ciphertext, reverse=True)
 
 
 if __name__ == "__main__":
