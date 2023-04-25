@@ -5,6 +5,8 @@ import math
 流程: 
  - key:
     1. 將所有字元轉ascii後接起來
+    2. 去除重複數字(如果有0要去掉)，並轉字串
+    3. 補上缺的數字
 - 加解密:
     目前和原本的Row Transposition cipher一樣
 """
