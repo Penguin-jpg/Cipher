@@ -8,29 +8,39 @@ from railfence import RailFence
 from row_transposition import RowTransposition
 from grille import Grille
 
+# rsa
+from rsa import read_key, encrypt
 
-key = "joSFzkRgUgjhoz4RWkAhBLRnwho8ZAm7"
-plaintext = "789Yesphilosophicallyspeakingalltweetsarebadbuttobefullyhumanistorebelagainstthisfacttosendourterribletweetsoutintotheuniverseanyway44256321"
+if __name__ == "__main__":
+    # read public key
+    public_key = read_key("public_key.pem")
 
-row_transposition = RowTransposition(key)
-baconian = Baconian(key)
-rail_fence = RailFence(key)
-affine = Affine(key)
-grille = Grille(key)
-gronsfeld = Gronsfeld(key)
+    # key and plaintext
+    key = "2g3qp6GOI"
+    plaintext = "Ab1c23D7"
 
-methods = [
-    row_transposition,
-    baconian,
-    rail_fence,
-    affine,
-    grille,
-    gronsfeld,
-]
-ciphertext = plaintext
+    row_transposition = RowTransposition(key)
+    baconian = Baconian(key)
+    rail_fence = RailFence(key)
+    affine = Affine(key)
+    grille = Grille(key)
+    gronsfeld = Gronsfeld(key)
 
-for method in methods:
-    ciphertext = method.encrypt(ciphertext)
-    print("encrypted: ")
-    print(ciphertext)
-    print()
+    methods = [
+        row_transposition,
+        baconian,
+        rail_fence,
+        affine,
+        grille,
+        gronsfeld,
+    ]
+    ciphertext = plaintext
+
+    for method in methods:
+        ciphertext = method.encrypt(ciphertext)
+        print("encrypted: ")
+        print(ciphertext)
+        print()
+
+    encrypted_key = encrypt(key, public_key)
+    print("encrypted_key: " + encrypted_key)

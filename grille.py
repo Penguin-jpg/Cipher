@@ -123,11 +123,18 @@ class Grille:
             if not larger_than_36:
                 # find where = is and cut there
                 split_position = plaintext.find("=")
-                if split_position != -1 and split_position == len(plaintext) - 1:
+                if self._all_equal_behind(plaintext, split_position):
                     return plaintext[:split_position]
                 break
 
         return plaintext
+
+    def _all_equal_behind(self, text, start):
+        """Check if there are any char other than '=' from 'start'"""
+        for i in range(start, len(text)):
+            if text[i] != "=":
+                return False
+        return True
 
 
 if __name__ == "__main__":

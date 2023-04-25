@@ -8,33 +8,45 @@ from railfence import RailFence
 from row_transposition import RowTransposition
 from grille import Grille
 
-key = "joSFzkRgUgjhoz4RWkAhBLRnwho8ZAm7"
-answer = "789Yesphilosophicallyspeakingalltweetsarebadbuttobefullyhumanistorebelagainstthisfacttosendourterribletweetsoutintotheuniverseanyway44256321"
-encrypted = "OoaQaZHYF5vaTK7zH64UGfER+=W7xbgUG1isjLLgHkz4-Tk8aYLYhFEeDwUO6sifFAMm5B3tqetvtpxr=8Hyf+ep85eo55n6M51eQRrT=mGqiKYzKaKhvmGr9j1hXfgnO+UKFb2HJQPC8CqM"
-
-gronsfeld = Gronsfeld(key)
-grille = Grille(key)
-affine = Affine(key)
-rail_fence = RailFence(key)
-baconian = Baconian(key)
-row_transposition = RowTransposition(key)
+# rsa
+from rsa import read_key, decrypt
 
 
-methods = [
-    gronsfeld,
-    grille,
-    affine,
-    rail_fence,
-    baconian,
-    row_transposition,
-]
+if __name__ == "__main__":
+    answer = "Ab1c23D7"
 
-plaintext = encrypted
-for method in methods:
-    plaintext = method.decrypt(plaintext)
-    print("decrypted: ")
-    print(plaintext)
-    print()
+    # read private key
+    private_key = read_key("private_key.pem")
 
-if plaintext == answer:
-    print("!")
+    # read from qr code
+    encrypted_key = "bLYYdLMJPpXr0/VYwG8sNwi/6mJ0j4Hzmmk7HiCAGj/Rp7p4T3zmYhXpIejZm/tQqZmCXlHWqmQicPLQV5Y6cZTc3f1WKrWT0f0/ijSA5Puy2TYpmIwOxTevnLmL+i0HxiTMschG7qV6JQIrbabWx292I56Wl8Y9RxSD2RY9MrI="
+    ciphertext = "CrzmxfFgDFiFmxfFgDc-FmxfFgD7FYqxfFgD"
+
+    # decrypt key
+    key = decrypt(encrypted_key, private_key)
+
+    gronsfeld = Gronsfeld(key)
+    grille = Grille(key)
+    affine = Affine(key)
+    rail_fence = RailFence(key)
+    baconian = Baconian(key)
+    row_transposition = RowTransposition(key)
+
+    methods = [
+        gronsfeld,
+        grille,
+        affine,
+        rail_fence,
+        baconian,
+        row_transposition,
+    ]
+
+    plaintext = ciphertext
+    for method in methods:
+        plaintext = method.decrypt(plaintext)
+        print("decrypted: ")
+        print(plaintext)
+        print()
+
+    if plaintext == answer:
+        print("!")
