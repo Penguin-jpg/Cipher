@@ -10,8 +10,8 @@ import string
 流程: 
  - key:
     1. 先將key中的每個字元轉成對應的ascii
-    2. 按照[2,3,2,3]的切割長度循環切割字串
-    3. 將切割出的數字對應到[a-zA-Z0-9]
+    2. 按照[2,3]的切割長度循環切割字串
+    3. 將切割出的數字對應到[a-zA-Z0-9]+[-+=]
     4. 重複1~3步3次
     4. 由於做完之後key長度會變長，所以要切到跟原本一樣長
     (註: 因為在demo過程中收到的plaintext是來自上一個方法的密文，而非原本的明文，若用一般的Autokey方法會失敗，所以才改成這種方式)
@@ -34,8 +34,8 @@ class Gronsfeld:
 
     def _split_to_groups(self):
         """Randomly split key into k groups with length 2 or 3 and map them to AVAILABLE_CHARS"""
-        # 切割字元數會在 [2,3,2,3] 中循環
-        splits, index, splited_keys = [2, 3, 2, 3], 0, []
+        # 切割字元數會在 [2,3] 中循環
+        splits, index, splited_keys = [2, 3], 0, []
 
         while len(self.key) > 0:
             split = splits[index]
