@@ -16,7 +16,8 @@ import string
     4. 由於做完之後key長度會變長，所以要切到跟原本一樣長
     (註: 因為在demo過程中收到的plaintext是來自上一個方法的密文，而非原本的明文，若用一般的Autokey方法會失敗，所以才改成這種方式)
 - 加解密:
-    目前和一般的Vigenere cipher方法一樣
+    1. 先按照一般的Vigenere cipher方法
+    2. 將key的ascii相加後除上密文的長度取餘數當做位移量來左移
 """
 
 
@@ -55,40 +56,65 @@ class Gronsfeld:
         # 由於上面的步驟重複多次後會使key變得更長，所以要切回原本的長度
         self.key = self.key[:truncate_length]
 
-    def _rotate_string(self, string, reverse=False):
-        """Shift a string using a key (use reverse=True for decrypt)"""
-        key_index, result = 0, ""
+    def _rotate_text(self, text, reverse=False):
+        """Shift text by (sum(ascii of key) % len(text))"""
+        rotate_amount = sum(ord(char) for char in self.key) % len(text)
 
-        for char in string:
-            # char在AVAILABLE_CHARS的位置
-            pos = self.AVAILABLE_CHARS.index(char)
-            # 位移量
-            shift = self.AVAILABLE_CHARS.index(self.key[key_index])
-            # 解密時移動方向要反過來
-            shift *= -1 if reverse else 1
+        # 如果reverse(解密)，就需要把原本從後段截取的部分從前面取出，再接回後面
+        if reverse:
+            rotate_amount = len(text) - rotate_amount
 
-            # 位移
-            new_pos = (pos + shift) % len(self.AVAILABLE_CHARS)
-            result += self.AVAILABLE_CHARS[new_pos]
-
-            key_index = (key_index + 1) % len(self.key)
-
-        return result
+        # 循環位移
+        return text[rotate_amount:] + text[:rotate_amount]
 
     def encrypt(self, plaintext):
         """Encrypt plaintext using Vigenere cipher"""
-        return self._rotate_string(plaintext)
+        ciphertext = ""
+        key_index = 0
+
+        for char in plaintext:
+            # char在AVAILABLE_CHARS的位置
+            pos = self.AVAILABLE_CHARS.index(char)
+            # 字元位移量(右移)
+            shift = self.AVAILABLE_CHARS.index(self.key[key_index])
+            # 位移
+            new_pos = (pos + shift) % len(self.AVAILABLE_CHARS)
+            ciphertext += self.AVAILABLE_CHARS[new_pos]
+
+            key_index = (key_index + 1) % len(self.key)
+
+        # 位移密文
+        ciphertext = self._rotate_text(ciphertext)
+
+        return ciphertext
 
     def decrypt(self, ciphertext):
         """Decrypt ciphertext using Vigenere cipher"""
-        return self._rotate_string(ciphertext, reverse=True)
+        plaintext = ""
+        key_index = 0
+
+        # 先位移密文換成正確順序
+        ciphertext = self._rotate_text(ciphertext, reverse=True)
+
+        for char in ciphertext:
+            # char在AVAILABLE_CHARS的位置
+            pos = self.AVAILABLE_CHARS.index(char)
+            # 字元位移量(左移)
+            shift = -self.AVAILABLE_CHARS.index(self.key[key_index])
+            # 位移
+            new_pos = (pos + shift) % len(self.AVAILABLE_CHARS)
+            plaintext += self.AVAILABLE_CHARS[new_pos]
+
+            key_index = (key_index + 1) % len(self.key)
+
+        return plaintext
 
 
 if __name__ == "__main__":
     key = "DeT3Qhx6j8SQ7OL6PwlsHjcha9JUpyXD"
     # key = "joSFzkRgUgjhoz4RWkAhBLRnwho8ZAm7"
-    plaintext = "456ThismagazineisavailableinanybigcityinJapanShemiscalculatedtheamountofbrothinhersoupandinadvertentlyboileditalloff123"
-    # plaintext = "789Yesphil=osophicallyspeakingalltweetsarebadbuttobefullyhumanistorebelagainstthisfacttosendourterribletw=eetsoutintothe+universeanyway4425-6321"
+    # plaintext = "456ThismagazineisavailableinanybigcityinJapanShemiscalculatedtheamountofbrothinhersoupandinadvertentlyboileditalloff123"
+    plaintext = "789Yesphil=osophicallyspeakingalltweetsarebadbuttobefullyhumanistorebelagainstthisfacttosendourterribletw=eetsoutintothe+universeanyway4425-6321"
     print("original key: " + key)
     gronsfeld = Gronsfeld(key)
     encrypted = gronsfeld.encrypt(plaintext)

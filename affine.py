@@ -5,7 +5,7 @@ Code is based on https://www.geeksforgeeks.org/implementation-affine-cipher/
 """
 流程: 
  - key:
-    第一個key固定取17，第二個key把所有key中字元的ascii總和mod62
+    第一個key固定取17，第二個key把所有key中字元的ascii總和mod64
 - 加解密:
     目前和原本的Affine cipher一樣
 """
@@ -20,7 +20,7 @@ class Affine:
         new_key = 0
         for char in key:
             new_key += ord(char)
-        return [17, new_key % 65]
+        return [17, new_key % 64]
 
     def _egcd(self, a, b):
         """Extended Euclidean Algorithm for finding modular inverse"""
@@ -45,14 +45,12 @@ class Affine:
         plaintext = plaintext.replace(" ", "")
         ciphertext = ""
         for char in plaintext:
-            # calculate x: 0~9 no change; A~Z is 10~35; a~z is 36~61; + is 62; - is 63; = is 64
+            # calculate x: 0~9 no change; A~Z is 10~35; a~z is 36~61; + is 62; - is 63
             if ord(char) < ord("A"):
                 if ord(char) == ord("+"):
                     x = ord(char) - ord("+") + 62
                 elif ord(char) == ord("-"):
                     x = ord(char) - ord("-") + 63
-                elif ord(char) == ord("="):
-                    x = ord(char) - ord("=") + 64
                 else:
                     x = ord(char) - ord("0")
             elif ord(char) > ord("Z"):
@@ -60,10 +58,10 @@ class Affine:
             else:
                 x = ord(char) - ord("A") + 10
 
-            # calculate C: C = (a*P + b) % 65
-            x = (self.key[0] * x + self.key[1]) % 65
+            # calculate C: C = (a*P + b) % 64
+            x = (self.key[0] * x + self.key[1]) % 64
 
-            # product the Cipher: x = 0~9 -> number 0~9; x = 10~35 -> A~Z; x = 36~61 -> a~z; x = 62 -> +; x = 63 -> -; x = 64 -> =
+            # product the Cipher: x = 0~9 -> number 0~9; x = 10~35 -> A~Z; x = 36~61 -> a~z; x = 62 -> +; x = 63 -> -
             if x < 10:
                 ciphertext += chr(x + ord("0"))
             elif x < 36:
@@ -74,8 +72,6 @@ class Affine:
                 ciphertext += chr(x - 62 + ord("+"))
             elif x == 63:
                 ciphertext += chr(x - 63 + ord("-"))
-            else:
-                ciphertext += chr(x - 64 + ord("="))
 
         return ciphertext
 
@@ -83,14 +79,12 @@ class Affine:
         """Decrypt ciphertext using Affine cipher"""
         plaintext = ""
         for char in ciphertext:
-            # calculate y: 0~9 no change; A~Z is 10~35; a~z is 36~61; + is 62; - is 63; = is 64
+            # calculate y: 0~9 no change; A~Z is 10~35; a~z is 36~61; + is 62; - is 63
             if ord(char) < ord("A"):
                 if ord(char) == ord("+"):
                     y = ord(char) - ord("+") + 62
                 elif ord(char) == ord("-"):
                     y = ord(char) - ord("-") + 63
-                elif ord(char) == ord("="):
-                    y = ord(char) - ord("=") + 64
                 else:
                     y = ord(char) - ord("0")
             elif ord(char) > ord("Z"):
@@ -98,10 +92,10 @@ class Affine:
             else:
                 y = ord(char) - ord("A") + 10
 
-            # calculate P: P = (a^-1 * (C - b)) % 65
-            y = (self._mod_inverse(self.key[0], 65) * (y - self.key[1])) % 65
+            # calculate P: P = (a^-1 * (C - b)) % 64
+            y = (self._mod_inverse(self.key[0], 64) * (y - self.key[1])) % 64
 
-            # product the Plain: y = 0~9 -> number 0~9; y = 10~35 -> A~Z; y = 36~61 -> a~z; y = 62 -> +; y = 63 -> -; y = 64 -> =
+            # product the Plain: y = 0~9 -> number 0~9; y = 10~35 -> A~Z; y = 36~61 -> a~z; y = 62 -> +; y = 63 -> -
             if y < 10:
                 plaintext += chr(y + ord("0"))
             elif y < 36:
@@ -112,8 +106,6 @@ class Affine:
                 plaintext += chr(y - 62 + ord("+"))
             elif y == 63:
                 plaintext += chr(y - 63 + ord("-"))
-            elif y == 64:
-                plaintext += chr(y - 64 + ord("="))
 
         return plaintext
 

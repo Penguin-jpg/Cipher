@@ -83,10 +83,20 @@ class RowTransposition:
         for row in table:
             plaintext += "".join(row)
 
-        position_of_x = plaintext.find("x")
-        if position_of_x != -1:
-            return plaintext[:position_of_x]
+        # 找出所有包含"x"的位置
+        positions_of_x = [it.start() for it in re.finditer("x", plaintext)]
+        # 由於可能會有非尾部部分出現"x"的情況，所以要確定切的地方後面都是"x"才切
+        for position in positions_of_x:
+            if self._all_x_behind(plaintext, position):
+                return plaintext[:position]
         return plaintext
+
+    def _all_x_behind(self, text, start):
+        """Check if there are any char other than 'x' from 'start'"""
+        for i in range(start, len(text)):
+            if text[i] != "x":
+                return False
+        return True
 
 
 if __name__ == "__main__":

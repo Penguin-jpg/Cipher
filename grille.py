@@ -1,4 +1,5 @@
 import string
+import re
 
 """
 流程: 
@@ -33,15 +34,20 @@ class Grille:
         new_key = ""
         # table for key transformation
         key_transform_table = list("1234567890" + string.ascii_letters)
-        for i in range(self.num_groups):
+
+        # 要確保迴圈正常運行
+        for i in range(min(len(key), self.num_groups)):
             key_index = 0
             for j in range(len(key_transform_table)):
                 if key[i] == key_transform_table[j]:
                     key_index = j
                     break
             new_key += str((key_index % 4 + 1))
+
+        # 長度不到9要補1
         if len(new_key) < self.num_groups:
             new_key += "1" * (self.num_groups - len(new_key))
+
         return new_key
 
     def encrypt(self, plaintext):
@@ -121,10 +127,17 @@ class Grille:
 
             plaintext += "".join(decrypt_array)
             if not larger_than_36:
-                # find where = is and cut there
-                split_position = plaintext.find("=")
-                if self._all_equal_behind(plaintext, split_position):
-                    return plaintext[:split_position]
+                # 找出所有包含"="的位置
+                positions_of_equal = [it.start() for it in re.finditer("=", plaintext)]
+
+                # 某些特殊情況下，在只有一個等號且該等號在最後一個字的情況下不能山
+                if len(positions_of_equal) == 1 and positions_of_equal[0] == len(plaintext) - 1:
+                    break
+
+                # 刪掉多餘的符號
+                for position in positions_of_equal:
+                    if self._all_equal_behind(plaintext, position):
+                        return plaintext[:position]
                 break
 
         return plaintext
