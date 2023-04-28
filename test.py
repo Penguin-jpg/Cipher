@@ -98,3 +98,4 @@ if __name__ == "__main__":
         if test(keys[i], plaintexts[i]):
             counter += 1
     print(f"總共測試次數: {NUM_ITERS}, 成功次數: {counter}")
+    # test("xPZo0rNbG7", "sayhellotohimforme")

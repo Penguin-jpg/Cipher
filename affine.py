@@ -13,6 +13,39 @@ Code is based on https://www.geeksforgeeks.org/implementation-affine-cipher/
 
 class Affine:
     def __init__(self, key):
+        self.first_key_table = [
+            3,
+            5,
+            7,
+            9,
+            11,
+            13,
+            15,
+            17,
+            19,
+            21,
+            23,
+            25,
+            27,
+            29,
+            31,
+            33,
+            35,
+            37,
+            39,
+            41,
+            43,
+            45,
+            47,
+            49,
+            51,
+            53,
+            55,
+            57,
+            59,
+            61,
+            63,
+        ]
         self.key = self._key_transform(key)
 
     def _key_transform(self, key):
@@ -20,7 +53,7 @@ class Affine:
         new_key = 0
         for char in key:
             new_key += ord(char)
-        return [17, new_key % 64]
+        return [self.first_key_table[new_key % len(self.first_key_table)], new_key % 64]
 
     def _egcd(self, a, b):
         """Extended Euclidean Algorithm for finding modular inverse"""
