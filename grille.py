@@ -27,22 +27,18 @@ class Grille:
             [14, 10, 23, 27],
             [15, 16, 22, 21],
         ]
+        self.key_transform_table = "1234567890" + string.ascii_letters + "-+"
         self.key = self._key_transform(key)
 
     def _key_transform(self, key):
         """Make key valid for Grille cipher"""
         new_key = ""
         # table for key transformation
-        key_transform_table = list("1234567890" + string.ascii_letters)
 
         # 要確保迴圈正常運行
         for i in range(min(len(key), self.num_groups)):
-            key_index = 0
-            for j in range(len(key_transform_table)):
-                if key[i] == key_transform_table[j]:
-                    key_index = j
-                    break
-            new_key += str((key_index % 4 + 1))
+            key_index = self.key_transform_table.index(key[i])
+            new_key += str(key_index % 4 + 1)
 
         # 長度不到9要補1
         if len(new_key) < self.num_groups:

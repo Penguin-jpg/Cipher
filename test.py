@@ -85,7 +85,7 @@ def test(key, plaintext):
 
 
 if __name__ == "__main__":
-    AVAILABLE_CHARS = string.ascii_letters + string.digits
+    AVAILABLE_CHARS = string.ascii_letters + string.digits + "-+"
     KEY_LENGTH = 8
     NUM_ITERS = 10
     PLAINTEXT_LENGTH = 8

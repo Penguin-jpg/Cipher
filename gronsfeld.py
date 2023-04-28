@@ -34,7 +34,7 @@ class Gronsfeld:
             self.key = self.key.replace(char, str(ord(char)))
 
     def _split_to_groups(self):
-        """Randomly split key into k groups with length 2 or 3 and map them to AVAILABLE_CHARS"""
+        """Split key into k groups with length 2 or 3 and map them to AVAILABLE_CHARS"""
         # 切割字元數會在 [2,3] 中循環
         splits, index, splited_keys = [2, 3], 0, []
 
