@@ -11,9 +11,7 @@ import string
  - key:
     1. 先將key中的每個字元轉成對應的ascii
     2. 按照[2,3]的切割長度循環切割字串
-    3. 將切割出的數字對應到[a-zA-Z0-9]+[-+=]
-    4. 重複1~3步3次
-    4. 由於做完之後key長度會變長，所以要切到跟原本一樣長
+    3. 將切割出的數字對應到table
     (註: 因為在demo過程中收到的plaintext是來自上一個方法的密文，而非原本的明文，若用一般的Autokey方法會失敗，所以才改成這種方式)
 - 加解密:
     1. 先按照一般的Vigenere cipher方法
@@ -23,38 +21,35 @@ import string
 
 class Gronsfeld:
     def __init__(self, key):
-        self.AVAILABLE_CHARS = string.digits + string.ascii_letters + "-+="
-        self.key = key
-        # 三次之後重複的字有點多，先做三次就好
-        self._process_key(repeat_times=3, truncate_length=len(key))
+        self.AVAILABLE_CHARS = string.printable[:-6]  # 取所有可印出的ascii(但不包含" ","\t","\n","\r","\x0b","\x0c")
+        self.key = self._key_transform(key)
+        print(self.key)
 
-    def _key_to_all_nums(self):
+    def _key_to_all_nums(self, key):
         """Turn every char in key to number"""
         for char in self.AVAILABLE_CHARS:
-            self.key = self.key.replace(char, str(ord(char)))
+            key = key.replace(char, str(ord(char)))
+        return key
 
-    def _split_to_groups(self):
+    def _split_to_groups(self, key):
         """Split key into k groups with length 2 or 3 and map them to AVAILABLE_CHARS"""
         # 切割字元數會在 [2,3] 中循環
         splits, index, splited_keys = [2, 3], 0, []
 
-        while len(self.key) > 0:
+        while len(key) > 0:
             split = splits[index]
-            num = sum(ord(char) for char in self.key[:split])
+            num = sum(ord(char) for char in key[:split])
             splited_keys.append(num % len(self.AVAILABLE_CHARS))
-            self.key = self.key[split:]
+            key = key[split:]
             index = (index + 1) % len(splits)
 
-        self.key = "".join(self.AVAILABLE_CHARS[splited_key] for splited_key in splited_keys)
+        return "".join(self.AVAILABLE_CHARS[splited_key] for splited_key in splited_keys)
 
-    def _process_key(self, repeat_times, truncate_length):
-        """Repeat process for n times"""
-        for _ in range(repeat_times):
-            self._key_to_all_nums()
-            self._split_to_groups()
-
-        # 由於上面的步驟重複多次後會使key變得更長，所以要切回原本的長度
-        self.key = self.key[:truncate_length]
+    def _key_transform(self, key):
+        """Make key valid for Gronsfeld cipher"""
+        key = self._key_to_all_nums(key)
+        key = self._split_to_groups(key)
+        return key
 
     def _rotate_text(self, text, reverse=False):
         """Shift text by (sum(ascii of key) % len(text))"""
