@@ -21,7 +21,7 @@ if __name__ == "__main__":
 
     # 明文中有"x"的測資且解出的尾巴不是"x"
     # key = "nfrNVALs"
-    # plaintext = " ymixeZLG"
+    # plaintext = "ymixeZLG"
 
     # 明文中有"x"且解出來的尾巴是"x"的測資
     # key = "OTgdMeio"

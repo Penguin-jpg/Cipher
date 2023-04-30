@@ -19,8 +19,8 @@ if __name__ == "__main__":
     private_key = read_key("private_key.pem")
 
     # read from qr code
-    encrypted_key = "RizOZgIYuzSAU9eFT8BoqSo7Qcn8NDUKEHsLuJNDf8Nmt7Y7R3/9fZoJ2nqvSOTkmZqJ+vMb5qhfUSAZ9g5R8JBq8y/sbonW8kfrOPNz1UOuHVB/fzPFvRIl2im0Xv8954gNKWrJQwGmrQtKGgVyPCMiZgNowX59hmXo+SlToLw="
-    ciphertext = "gxpxf+UBgxpxfDjBgxpxfDjTM1lBgxpxHojB"
+    encrypted_key = "jB+ZY78157cdS1/9Ani9sX4PiBylUDY8OdmF+mJcAUTO3UQpioW4Y5oDRNdGOuGwoDdVpxBObyQ4OuEy4Ca9bGfpilEd5/tHJCr/kIHMLX1V1zltAodquqcfdMw54GYE2PShpdINLlHZp+3sCFOTtBFBSB6GzE0KX6CxkYbrzZg="
+    ciphertext = "-|.fp<j.DXd;/tJreXMCPUBM3x+V}<_4owq("
 
     # decrypt key
     key = decrypt(encrypted_key, private_key)
