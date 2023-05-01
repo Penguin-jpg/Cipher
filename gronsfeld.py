@@ -23,7 +23,6 @@ class Gronsfeld:
     def __init__(self, key):
         self.AVAILABLE_CHARS = string.printable[:-6]  # 取所有可印出的ascii(但不包含" ","\t","\n","\r","\x0b","\x0c")
         self.key = self._key_transform(key)
-        print(self.key)
 
     def _key_to_all_nums(self, key):
         """Turn every char in key to number"""
