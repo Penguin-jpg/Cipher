@@ -10,5 +10,5 @@
   4. Affine Cipher
   5. Grille Cipher
   6. Gronsfeld Cipher
-- 每種加密方法都是以原方法為核心下去修改，除了 Gronsfeld Cipher 以外，均能夠處理數字及大小寫字母
+- 每種加密方法都是以原方法為核心下去修改，均能夠處理數字、大小寫字母以及加號減號
 - 每種方法有不同的 key 格式，所以會透過 `_key_transform` 進行轉換
