@@ -32,8 +32,11 @@ if __name__ == "__main__":
     # plaintext = "zbCPS7ix"
 
     # 正常測資(測出affine不應該可以加密出"=")
-    key = "zggN57o7"
-    plaintext = "raNitPfe"
+    # key = "zggN57o7"
+    # plaintext = "raNitPfe"
+
+    key = "Zg9O"
+    plaintext = "oeMS45"
 
     row_transposition = RowTransposition(key)
     baconian = Baconian(key)
@@ -59,4 +62,4 @@ if __name__ == "__main__":
         print()
 
     encrypted_key = encrypt(key, public_key)
-    print("encrypted_key: " + encrypted_key)
+    print("encrypted_key: \n" + encrypted_key)
